@@ -24,6 +24,7 @@ public class Produto {
     private long id;
     @NotBlank
     private String nome;
+
     @DecimalMin("0.01")
     private BigDecimal valor;
 

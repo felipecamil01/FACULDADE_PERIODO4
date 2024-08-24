@@ -2,7 +2,7 @@ package com.example.LOJA.Controller;
 
 import com.example.LOJA.Entity.Cliente;
 
-import com.example.LOJA.Entity.Venda;
+
 import com.example.LOJA.Service.ClienteService;
 import com.example.LOJA.repository.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
