@@ -4,6 +4,7 @@ import com.example.LOJA.Entity.Cliente;
 
 import com.example.LOJA.Entity.Venda;
 import com.example.LOJA.Service.ClienteService;
+import com.example.LOJA.repository.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import java.util.Optional;
 public class ClienteController {
     @Autowired
     private ClienteService clienteService;
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @PostMapping
     public ResponseEntity<Cliente> criarCliente(@RequestBody Cliente cliente) {
@@ -53,5 +56,27 @@ public class ClienteController {
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
         clienteService.excluirCliente (id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    // Filtro por nome
+    @GetMapping("/nome")
+    public ResponseEntity<List<Cliente>> buscarPorNome(@RequestParam String nome) {
+        List<Cliente> clientes = clienteRepository.findByNomeContaining(nome);
+        return ResponseEntity.ok(clientes);
+    }
+
+    // Filtro por CPF
+    @GetMapping("/cpf")
+    public ResponseEntity<List<Cliente>> buscarPorCpf(@RequestParam String cpf) {
+        List<Cliente> clientes = clienteRepository.findByCpf(cpf);
+        return ResponseEntity.ok(clientes);
+    }
+
+    // Filtro por idade mínima
+    @GetMapping("/idade-minima")
+    public ResponseEntity<List<Cliente>> buscarPorIdadeMinima(@RequestParam int idadeMinima) {
+        List<Cliente> clientes = clienteRepository.findByIdadeMinina(idadeMinima);
+        return ResponseEntity.ok(clientes);
     }
 }

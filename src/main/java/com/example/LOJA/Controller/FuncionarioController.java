@@ -1,7 +1,9 @@
 package com.example.LOJA.Controller;
 
+import com.example.LOJA.Entity.Cliente;
 import com.example.LOJA.Entity.Funcionario;
 import com.example.LOJA.Service.FuncionarioService;
+import com.example.LOJA.repository.FuncionarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ public class FuncionarioController {
 
     @Autowired
     private FuncionarioService funcionarioService;
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
 
     @PostMapping
     public ResponseEntity<Funcionario> criarFuncionario(@RequestBody Funcionario funcionario) {
@@ -50,6 +54,26 @@ public class FuncionarioController {
     public ResponseEntity<Void> excluirFuncionario(@PathVariable Long id) {
         funcionarioService.excluirCliente (id);
         return ResponseEntity.noContent().build();
+    }
+    // Filtro por nome
+    @GetMapping("/nome")
+    public ResponseEntity<List<Funcionario>> buscarPorNome(@RequestParam String nome) {
+        List<Funcionario> funcionarios = funcionarioRepository.findByNomeContaining(nome);
+        return ResponseEntity.ok(funcionarios);
+    }
+
+    // Filtro por matricula
+    @GetMapping("/matricula")
+    public ResponseEntity<List<Funcionario>> buscarPorMatricula(@RequestParam String matricula) {
+        List<Funcionario> funcionarios = funcionarioRepository.findByMatricula(matricula);
+        return ResponseEntity.ok(funcionarios);
+    }
+
+    // Filtro por idade mínima
+    @GetMapping("/idade-minima")
+    public ResponseEntity<List<Funcionario>> buscarPorIdadeMinima(@RequestParam int idadeMinima) {
+        List<Funcionario> funcionarios = funcionarioRepository.findByIdadeMinina(idadeMinima);
+        return ResponseEntity.ok(funcionarios);
     }
 }
 
