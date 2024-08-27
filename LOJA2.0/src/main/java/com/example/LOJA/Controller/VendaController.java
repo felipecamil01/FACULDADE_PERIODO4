@@ -32,19 +32,19 @@ public class VendaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novaVenda);
     }
 
-    @GetMapping("/listar")
+    @GetMapping("/findAll")
     public List<Venda> listarVendas() {
         return vendaService.buscarTodasAsVendas();
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/findByid/{id}")
     public ResponseEntity<Venda> buscarVendaPorId(@PathVariable Long id) {
         Optional<Venda> venda = vendaService.buscarVendaPorId(id);
         return venda.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("atualizar/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Venda> atualizarVenda(@PathVariable Long id, @Valid @RequestBody Venda vendaAtualizada) {
         try {
             Venda venda = vendaService.atualizarVenda(id, vendaAtualizada);
@@ -54,7 +54,7 @@ public class VendaController {
         }
     }
 
-    @DeleteMapping("excluir/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> excluirVenda(@PathVariable Long id) {
         try {
             if (!vendaRepository.existsById(id)) {

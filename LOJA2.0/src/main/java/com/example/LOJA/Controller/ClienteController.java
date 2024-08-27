@@ -29,20 +29,20 @@ public class ClienteController {
         Cliente novoCliente = clienteService.save(cliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoCliente);
     }
-    @GetMapping("/listar")
+    @GetMapping("/findAll")
     public List<Cliente> listar() {
         return  clienteService.buscarTodosCliente();
     }
 
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/findById/{id}")
     public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
         Optional<Cliente> cliente = clienteService.clienteBuscarPorId(id);
         return cliente.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("atualizar/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente clienteAtualizada) {
         try {
             Cliente cliente = clienteService.atualizarCliente(id, clienteAtualizada);
@@ -52,7 +52,7 @@ public class ClienteController {
         }
     }
 
-    @DeleteMapping("excluir/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> excluirCliente(@PathVariable Long id) {
         try {
             if (!clienteRepository.existsById(id)) {

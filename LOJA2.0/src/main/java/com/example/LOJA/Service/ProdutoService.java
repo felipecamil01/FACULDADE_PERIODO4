@@ -16,6 +16,11 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
+    public Produto save(Produto produto) {
+
+        return produtoRepository.save(produto);
+    }
+
     public List<Produto> findAll() {
         return produtoRepository.findAll();
     }
@@ -24,12 +29,6 @@ public class ProdutoService {
         return produtoRepository.findById(id);
     }
 
-    public Produto save(Produto produto) {
-        return produtoRepository.save(produto);
-    }
-        public void deleteById (Long id){
-            produtoRepository.deleteById(id);
-        }
 
         public Produto atualizarProduto (Long id, Produto produtoAtualizado){
             Optional<Produto> produtoOptional = produtoRepository.findById(id);
@@ -46,4 +45,9 @@ public class ProdutoService {
                 throw new EntityNotFoundException("Produto não encontrado com o ID: " + id);
             }
         }
+
+    public void deleteById (Long id){
+
+        produtoRepository.deleteById(id);
+    }
     }

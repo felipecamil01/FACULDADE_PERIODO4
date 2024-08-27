@@ -21,25 +21,26 @@ import java.util.Optional;
         @Autowired
         private ProdutoRepository produtoRepository;
 
-        @GetMapping
-        public ResponseEntity<List<Produto>> getAllProdutos() {
-            List<Produto> produtos = produtoService.findAll();
-            return ResponseEntity.ok(produtos);
-        }
-
-        @GetMapping("/{id}")
-        public ResponseEntity<Produto> getProdutoById(@PathVariable Long id) {
-            Optional<Produto> produto = produtoService.findById(id);
-            return produto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-        }
-
         @PostMapping
         public ResponseEntity<Produto> createProduto(@RequestBody Produto produto) {
             Produto novoProduto = produtoService.save(produto);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoProduto);
         }
 
-        @PutMapping("/{id}")
+        @GetMapping("/findAll")
+        public ResponseEntity<List<Produto>> getAllProdutos() {
+            List<Produto> produtos = produtoService.findAll();
+            return ResponseEntity.ok(produtos);
+        }
+
+        @GetMapping("/findById/{id}")
+        public ResponseEntity<Produto> getProdutoById(@PathVariable Long id) {
+            Optional<Produto> produto = produtoService.findById(id);
+            return produto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        }
+
+
+        @PutMapping("/update/{id}")
         public ResponseEntity<Produto> updateProduto(@PathVariable Long id, @RequestBody Produto produtoAtualizado) {
             Optional<Produto> produtoExistente = produtoService.findById(id);
 
@@ -55,7 +56,7 @@ import java.util.Optional;
             }
         }
 
-        @DeleteMapping("/{id}")
+        @DeleteMapping("/delete/{id}")
         public ResponseEntity<Void> deleteProduto(@PathVariable Long id) {
             try {
                 if (!produtoRepository.existsById(id)) {

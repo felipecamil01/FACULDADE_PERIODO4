@@ -28,19 +28,19 @@ public class FuncionarioController {
         Funcionario novoFuncionario = funcionarioService.save(funcionario);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoFuncionario);
     }
-    @GetMapping("/listar")
+    @GetMapping("/findAll")
     public List<Funcionario> listar() {
         return  funcionarioService.buscarTodosFuncionario();
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/findyById/{id}")
     public ResponseEntity<Funcionario> buscarFuncionarioPorId(@PathVariable Long id) {
         Optional<Funcionario> funcionario = funcionarioService.buscarFuncionarioPorId(id);
         return funcionario.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("atualizar/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Funcionario> atualizarFuncionario(@PathVariable Long id, @RequestBody Funcionario funcionarioAtualizado) {
         try {
             Funcionario funcionario =  funcionarioService.atualizarFuncionario(id, funcionarioAtualizado);
@@ -50,7 +50,7 @@ public class FuncionarioController {
         }
     }
 
-    @DeleteMapping("excluir/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> excluirFuncionario(@PathVariable Long id) {
         try {
             if (!funcionarioRepository.existsById(id)) {
