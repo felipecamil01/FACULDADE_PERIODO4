@@ -27,9 +27,11 @@ public class VotoService {
         Eleitor eleitor = eleitorRepository.findById(eleitorId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor não encontrado"));
 
-        if (eleitor.getStatus() != StatusEleitor.APTO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor inapto para votação");
+        String resultadoValidacao = validaStatusEleitor(eleitor);
+        if (resultadoValidacao != null) {
+            return resultadoValidacao;
         }
+
         validaStatusEleitor(eleitor);
         verificarCandidatos(voto);
         voto.setDataHora(LocalDateTime.now());
@@ -43,7 +45,7 @@ public class VotoService {
 
         return voto.getHashComprovante();
     }
-    private void validaStatusEleitor(Eleitor eleitor) {
+    private String validaStatusEleitor(Eleitor eleitor) {
         if (eleitor.getStatus() == StatusEleitor.BLOQUEADO) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário bloqueado. Não pode votar.");
         }
@@ -59,8 +61,9 @@ public class VotoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já votou.");
         }
         if (eleitor.getStatus() != StatusEleitor.APTO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor inapto para votar.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor inapto para votação.");
         }
+        return null;
     }
     //valida candidato
     private void verificarCandidatos(Voto voto) {

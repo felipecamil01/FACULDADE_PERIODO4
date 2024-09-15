@@ -51,7 +51,6 @@ class VotoServiceTest {
         eleitor.setId(1L);
         eleitor.setStatus(StatusEleitor.PENDENTE);
 
-        // Setup do voto e dos candidatos
         voto = new Voto();
         candidatoPrefeito = new Candidato();
         candidatoPrefeito.setFuncao(1);
@@ -70,7 +69,7 @@ class VotoServiceTest {
             votoService.votar(1L, voto);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertEquals("Usuário inativo. Não pode votar.", exception.getReason());
     }
 
@@ -83,7 +82,7 @@ class VotoServiceTest {
             votoService.votar(1L, voto);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertEquals("Usuário bloqueado. Não pode votar.", exception.getReason());
     }
 
@@ -96,12 +95,12 @@ class VotoServiceTest {
             votoService.votar(1L, voto);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
         assertEquals("Usuário com cadastro pendente foi bloqueado!", exception.getReason());
 
-        // Verifica se o status do eleitor foi atualizado para BLOQUEADO
+        //verifica status para BLOQUEADO
         assertEquals(StatusEleitor.BLOQUEADO, eleitor.getStatus());
-        verify(eleitorRepository).save(eleitor);  // Verifica se o eleitor foi salvo após a atualização do status
+        verify(eleitorRepository).save(eleitor);
     }
 }
 
