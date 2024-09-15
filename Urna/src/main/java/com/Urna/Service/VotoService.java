@@ -30,6 +30,7 @@ public class VotoService {
         if (eleitor.getStatus() != StatusEleitor.APTO) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor inapto para votação");
         }
+        validaStatusEleitor(eleitor);
         verificarCandidatos(voto);
         voto.setDataHora(LocalDateTime.now());
         voto.setHashComprovante(UUID.randomUUID().toString());
@@ -42,7 +43,25 @@ public class VotoService {
 
         return voto.getHashComprovante();
     }
-
+    private void validaStatusEleitor(Eleitor eleitor) {
+        if (eleitor.getStatus() == StatusEleitor.BLOQUEADO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário bloqueado. Não pode votar.");
+        }
+        if (eleitor.getStatus() == StatusEleitor.INATIVO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário inativo. Não pode votar.");
+        }
+        if (eleitor.getStatus() == StatusEleitor.PENDENTE) {
+            eleitor.setStatus(StatusEleitor.BLOQUEADO);
+            eleitorRepository.save(eleitor);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário com cadastro pendente foi bloqueado!");
+        }
+        if (eleitor.getStatus() == StatusEleitor.VOTOU) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já votou.");
+        }
+        if (eleitor.getStatus() != StatusEleitor.APTO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor inapto para votar.");
+        }
+    }
     //valida candidato
     private void verificarCandidatos(Voto voto) {
         if (voto.getCandidatoPrefeito().getFuncao() != 1) {
@@ -66,9 +85,13 @@ public class VotoService {
         for (Candidato candidato : candidatosVereador) {
             candidato.setVotosApurados(candidatoRepository.contarVotosPorCandidato(candidato.getId()));
         }
+        //quem teve mais voto
+        candidatosPrefeito.sort((c1,c2)->Integer.compare(c2.getVotosApurados(),c1.getVotosApurados()));
+        candidatosVereador.sort((c1,c2)->Integer.compare(c2.getVotosApurados(),c1.getVotosApurados()));
+
         apuracao.setCandidatosPrefeito(candidatosPrefeito);
         apuracao.setCandidatosVereador(candidatosVereador);
-        apuracao.setTotalVotos(candidatosPrefeito.size() + candidatosVereador.size());
+       apuracao.setTotalVotos((int) votoRepository.count());
 
         return apuracao;
     }

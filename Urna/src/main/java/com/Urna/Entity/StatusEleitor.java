@@ -1,5 +1,14 @@
 package com.Urna.Entity;
 
-public enum StatusEleitor {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+enum StatusEleitor {
     APTO, INATIVO, BLOQUEADO, PENDENTE, VOTOU;
 }
