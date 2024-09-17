@@ -1,7 +1,0 @@
-com\Urna\UrnaApplicationTest.class
-com\Urna\Service\VotoServiceTest.class
-com\Urna\Controller\EleitorControllerTest.class
-com\Urna\Controller\CandidatoControllerTest.class
-com\Urna\Service\CandidatoServiceTest.class
-com\Urna\Service\EleitorServiceTest.class
-com\Urna\Controller\VotoControllerTest.class
