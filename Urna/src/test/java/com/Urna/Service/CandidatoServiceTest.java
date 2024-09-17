@@ -1,19 +1,15 @@
 package com.Urna.Service;
 
 import com.Urna.Entity.Candidato;
-import com.Urna.Entity.Eleitor;
 import com.Urna.Entity.StatusCandidato;
-import com.Urna.Entity.StatusEleitor;
 import com.Urna.Repository.CandidatoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;

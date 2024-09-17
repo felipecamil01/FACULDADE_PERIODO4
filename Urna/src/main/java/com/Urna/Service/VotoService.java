@@ -25,12 +25,33 @@ public class VotoService {
         Eleitor eleitor = eleitorRepository.findById(eleitorId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor não encontrado"));
 
-        String resultadoValidacao = validaStatusEleitor(eleitor);
-        if (resultadoValidacao != null) {
-            return resultadoValidacao;
+        if (eleitor.getStatus() == StatusEleitor.BLOQUEADO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário bloqueado. Não pode votar.");
+        }
+        if (eleitor.getStatus() == StatusEleitor.INATIVO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário inativo. Não pode votar.");
+        }
+        if (eleitor.getStatus() == StatusEleitor.PENDENTE) {
+            eleitor.setStatus(StatusEleitor.BLOQUEADO);
+            eleitorRepository.save(eleitor);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário com cadastro pendente foi bloqueado!");
+        }
+        if (eleitor.getStatus() == StatusEleitor.VOTOU) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já votou.");
         }
 
-        verificarCandidatos(voto);
+        Candidato candidatoPrefeito = candidatoRepository.findById(voto.getCandidatoPrefeito().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Candidato para prefeito não encontrado"));
+        Candidato candidatoVereador = candidatoRepository.findById(voto.getCandidatoVereador().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Candidato para vereador não encontrado"));
+
+        if (candidatoPrefeito.getFuncao() != 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O candidato escolhido para prefeito é um vereador");
+        }
+        if (candidatoVereador.getFuncao() != 2) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O candidato escolhido para vereador é um prefeito");
+        }
+        
         voto.setDataHora(LocalDateTime.now());
         voto.setHashComprovante(UUID.randomUUID().toString());
 
@@ -65,38 +86,4 @@ public class VotoService {
         return apuracao;
     }
 
-    private String validaStatusEleitor(Eleitor eleitor) {
-        if (eleitor.getStatus() == StatusEleitor.BLOQUEADO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário bloqueado. Não pode votar.");
-        }
-        if (eleitor.getStatus() == StatusEleitor.INATIVO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário inativo. Não pode votar.");
-        }
-        if (eleitor.getStatus() == StatusEleitor.PENDENTE) {
-            eleitor.setStatus(StatusEleitor.BLOQUEADO);
-            eleitorRepository.save(eleitor);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário com cadastro pendente foi bloqueado!");
-        }
-        if (eleitor.getStatus() == StatusEleitor.VOTOU) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já votou.");
-        }
-        if (eleitor.getStatus() != StatusEleitor.APTO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Eleitor inapto para votação.");
-        }
-        return null;
-    }
-
-    private void verificarCandidatos(Voto voto) {
-        Candidato candidatoPrefeito = candidatoRepository.findById(voto.getCandidatoPrefeito().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Candidato para prefeito não encontrado"));
-        Candidato candidatoVereador = candidatoRepository.findById(voto.getCandidatoVereador().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Candidato para vereador não encontrado"));
-
-        if (candidatoPrefeito.getFuncao() == null || candidatoPrefeito.getFuncao() != 1) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O candidato escolhido para prefeito é um vereador");
-        }
-        if (candidatoVereador.getFuncao() == null || candidatoVereador.getFuncao() != 2) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O candidato escolhido para vereador é um prefeito");
-        }
-    }
 }

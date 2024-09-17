@@ -11,12 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -73,7 +69,71 @@ public class VotoServiceTest {
         verify(votoRepository).save(voto);
         verify(eleitorRepository).save(eleitor);
     }
+    
+    @Test
+    void testVotar_EleitorNaoEncontrado() {
+        // Dados de entrada
+        Long eleitorId = 1L;
+        Voto voto = new Voto(); // Configure o voto conforme necessário
 
+        // Configuração do mock
+        when(eleitorRepository.findById(eleitorId)).thenReturn(Optional.empty());
+
+        // Execução e verificação
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            votoService.votar(eleitorId, voto);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatusCode());
+        assertEquals("Eleitor não encontrado", thrown.getReason());
+    }
+    
+    @Test
+    void testVotoCandidatoPrefeitoNaoEncontrado() {
+        // Arrange
+        Long eleitorId = 1L;
+        Voto voto = new Voto();
+        voto.setCandidatoPrefeito(new Candidato());
+        voto.getCandidatoPrefeito().setId(999L);
+        voto.setCandidatoVereador(new Candidato());
+        voto.getCandidatoVereador().setId(2L);
+
+        when(eleitorRepository.findById(eleitorId)).thenReturn(Optional.of(new Eleitor()));
+        when(candidatoRepository.findById(999L)).thenReturn(Optional.empty());
+        when(candidatoRepository.findById(2L)).thenReturn(Optional.of(new Candidato()));
+
+        // Act & Assert
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            votoService.votar(eleitorId, voto);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatusCode());
+        assertEquals("Candidato para prefeito não encontrado", thrown.getReason());
+    }
+
+    @Test
+    void testVotoCandidatoVereadorNaoEncontrado() {
+        // Arrange
+        Long eleitorId = 1L;
+        Voto voto = new Voto();
+        voto.setCandidatoPrefeito(new Candidato());
+        voto.getCandidatoPrefeito().setId(1L);
+        voto.setCandidatoVereador(new Candidato());
+        voto.getCandidatoVereador().setId(999L);
+
+        when(eleitorRepository.findById(eleitorId)).thenReturn(Optional.of(new Eleitor()));
+        when(candidatoRepository.findById(1L)).thenReturn(Optional.of(new Candidato()));
+        when(candidatoRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            votoService.votar(eleitorId, voto);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatusCode());
+        assertEquals("Candidato para vereador não encontrado", thrown.getReason());
+    }
+    
     @Test
     public void testVotarEleitorBloqueado() {
         // Arrange
@@ -238,4 +298,5 @@ public class VotoServiceTest {
         verify(candidatoRepository).contarVotosPorCandidato(1L);
         verify(candidatoRepository).contarVotosPorCandidato(2L);
     }
+    
 }
