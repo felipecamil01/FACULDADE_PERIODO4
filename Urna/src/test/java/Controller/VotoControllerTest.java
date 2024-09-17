@@ -1,4 +1,4 @@
-package com.Urna.Controller;
+package Controller;
 
 import com.Urna.Entity.Apuracao;
 import com.Urna.Entity.Voto;

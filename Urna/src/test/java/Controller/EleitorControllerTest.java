@@ -1,4 +1,4 @@
-package com.Urna.Controller;
+package Controller;
 
 import com.Urna.Entity.Eleitor;
 import com.Urna.Service.EleitorService;
