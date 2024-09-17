@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CandidatoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Urna</a> &gt; <a href="index.source.html" class="el_package">com.Urna.Service</a> &gt; <span class="el_source">CandidatoService.java</span></div><h1>CandidatoService.java</h1><pre class="source lang-java linenums">package com.Urna.Service;
+
+import com.Urna.Entity.Candidato;
+import com.Urna.Entity.StatusCandidato;
+import com.Urna.Repository.CandidatoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L13">public class CandidatoService {</span>
+
+    @Autowired
+    private CandidatoRepository candidatoRepository;
+
+    public Candidato save(Candidato candidato) {
+<span class="fc" id="L19">    	candidato.setStatus(StatusCandidato.ATIVO);</span>
+<span class="fc" id="L20">        return candidatoRepository.save(candidato);</span>
+    }
+
+    public Candidato update(Long id, Candidato candidatoAtualizado) {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (candidatoRepository.existsById(id)) {</span>
+<span class="fc" id="L25">            candidatoAtualizado.setId(id);</span>
+<span class="fc" id="L26">            candidatoAtualizado.setStatus(StatusCandidato.ATIVO);</span>
+<span class="fc" id="L27">            return candidatoRepository.save(candidatoAtualizado);</span>
+        } else {
+<span class="fc" id="L29">            throw new RuntimeException(&quot;Candidato não encontrado com ID: &quot; + id);</span>
+        }
+    }
+
+    public String inativar(Long id) {
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (candidatoRepository.existsById(id)) {</span>
+<span class="fc" id="L35">            candidatoRepository.inativar(id);</span>
+<span class="fc" id="L36">            return &quot;Candidato inativado com sucesso&quot;;</span>
+        } else {
+<span class="fc" id="L38">            throw new RuntimeException(&quot;Candidato não encontrado com ID: &quot; + id);</span>
+        }
+    }
+
+    public String reativar(Long id) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (candidatoRepository.existsById(id)) {</span>
+<span class="fc" id="L44">        	candidatoRepository.reativar(id);</span>
+<span class="fc" id="L45">            return &quot;Candidato reativado com sucesso&quot;;</span>
+        } else {
+<span class="fc" id="L47">            throw new RuntimeException(&quot;Candidato não encontrado com ID: &quot; + id);</span>
+        }
+    }
+
+    public List&lt;Candidato&gt; findAll() {
+<span class="fc" id="L52">        return candidatoRepository.findAll();</span>
+    }
+
+    public List&lt;Candidato&gt; findAllAtivos() {
+<span class="fc" id="L56">        return candidatoRepository.findAllAtivos();</span>
+    }
+
+    public Optional&lt;Candidato&gt; findById(Long id) {
+<span class="fc" id="L60">        return candidatoRepository.findById(id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
