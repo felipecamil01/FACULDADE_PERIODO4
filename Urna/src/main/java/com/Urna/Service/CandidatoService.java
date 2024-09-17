@@ -32,7 +32,11 @@ public class CandidatoService {
 
     public String inativar(Long id) {
         if (candidatoRepository.existsById(id)) {
-            candidatoRepository.inativar(id);
+            
+        	Candidato candidato = candidatoRepository.findById(id).get();
+        	candidato.setStatus(StatusCandidato.INATIVO);
+        	candidatoRepository.save(candidato);
+        	
             return "Candidato inativado com sucesso";
         } else {
             throw new RuntimeException("Candidato não encontrado com ID: " + id);
@@ -41,7 +45,11 @@ public class CandidatoService {
 
     public String reativar(Long id) {
         if (candidatoRepository.existsById(id)) {
-        	candidatoRepository.reativar(id);
+        	
+        	Candidato candidato = candidatoRepository.findById(id).get();
+        	candidato.setStatus(StatusCandidato.ATIVO);
+        	candidatoRepository.save(candidato);
+        	
             return "Candidato reativado com sucesso";
         } else {
             throw new RuntimeException("Candidato não encontrado com ID: " + id);

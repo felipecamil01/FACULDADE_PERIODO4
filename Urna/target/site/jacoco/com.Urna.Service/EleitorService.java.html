@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EleitorService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Urna</a> &gt; <a href="index.source.html" class="el_package">com.Urna.Service</a> &gt; <span class="el_source">EleitorService.java</span></div><h1>EleitorService.java</h1><pre class="source lang-java linenums">package com.Urna.Service;
+
+import com.Urna.Entity.Eleitor;
+import com.Urna.Entity.StatusEleitor;
+import com.Urna.Repository.EleitorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L13">public class EleitorService {</span>
+
+	@Autowired
+    private EleitorRepository eleitorRepository;
+
+    public Eleitor save(Eleitor eleitor) {
+<span class="fc bfc" id="L19" title="All 8 branches covered.">    	if(eleitor.getCpf() == null ||eleitor.getCpf().isBlank() || eleitor.getEmail() == null || eleitor.getEmail().isBlank()) eleitor.setStatus(StatusEleitor.PENDENTE);</span>
+    	else
+<span class="fc" id="L21">    		eleitor.setStatus(StatusEleitor.APTO);</span>
+    	
+<span class="fc" id="L23">        return eleitorRepository.save(eleitor);</span>
+    }
+
+    public Eleitor update(Long id, Eleitor eleitorAtualizado) {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (eleitorRepository.existsById(id)) {</span>
+<span class="fc" id="L28">            eleitorAtualizado.setId(id);</span>
+            
+<span class="fc" id="L30">            Eleitor eleitor = eleitorRepository.findById(id).get();</span>
+            
+<span class="fc bfc" id="L32" title="All 2 branches covered.">            if(eleitor.getStatus() == StatusEleitor.INATIVO) {</span>
+<span class="fc" id="L33">                eleitorAtualizado.setStatus(StatusEleitor.INATIVO);</span>
+            } else {
+<span class="fc bfc" id="L35" title="All 8 branches covered.">                if(eleitorAtualizado.getCpf() == null || eleitorAtualizado.getCpf().isBlank() || eleitorAtualizado.getEmail() == null || eleitorAtualizado.getEmail().isBlank()) {</span>
+<span class="fc" id="L36">                	eleitorAtualizado.setStatus(StatusEleitor.PENDENTE);</span>
+                } else {
+<span class="fc" id="L38">                    eleitorAtualizado.setStatus(StatusEleitor.APTO);</span>
+                }
+            }
+            
+<span class="fc" id="L42">            return eleitorRepository.save(eleitorAtualizado);</span>
+        } else {
+<span class="fc" id="L44">            throw new RuntimeException(&quot;Eleitor não encontrado com ID: &quot; + id);</span>
+        }
+    }
+
+
+    public String inativar(Long id) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (eleitorRepository.existsById(id)) {</span>
+            
+<span class="fc" id="L52">        	Eleitor eleitor = eleitorRepository.findById(id).get();</span>
+<span class="fc" id="L53">        	eleitor.setStatus(StatusEleitor.INATIVO);</span>
+<span class="fc" id="L54">        	eleitorRepository.save(eleitor);</span>
+        	
+<span class="fc" id="L56">            return &quot;Eleitor inativado com sucesso&quot;;</span>
+        } else {
+<span class="fc" id="L58">            throw new RuntimeException(&quot;Eleitor não encontrado com ID: &quot; + id);</span>
+        }
+    }
+    
+    public String reativar(Long id) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    	if(eleitorRepository.existsById(id)){</span>
+    		
+<span class="fc" id="L65">    		Eleitor eleitor = eleitorRepository.findById(id).get();</span>
+    		
+<span class="fc bfc" id="L67" title="All 8 branches covered.">    		if(eleitor.getCpf() == null || eleitor.getCpf().isBlank() || eleitor.getEmail() == null || eleitor.getEmail().isBlank()) </span>
+<span class="fc" id="L68">    			eleitor.setStatus(StatusEleitor.PENDENTE);</span>
+    		else
+<span class="fc" id="L70">    			eleitor.setStatus(StatusEleitor.APTO);</span>
+    		
+<span class="fc" id="L72">        	eleitorRepository.save(eleitor);</span>
+<span class="fc" id="L73">    		return &quot;Eleitor reativado com sucesso&quot;;</span>
+    	}else
+<span class="fc" id="L75">    		throw new RuntimeException(&quot;Eleitor não encontrado com ID: &quot; + id);</span>
+    }
+    
+    public List&lt;Eleitor&gt; findAll() {
+<span class="fc" id="L79">        return eleitorRepository.findAll();</span>
+    }
+    
+    public List&lt;Eleitor&gt; findAllAptos(){
+<span class="fc" id="L83">    	return eleitorRepository.findAllAptos();</span>
+    }
+
+    public Optional&lt;Eleitor&gt; findById(Long id) {
+<span class="fc" id="L87">        return eleitorRepository.findById(id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

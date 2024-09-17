@@ -1,7 +1,9 @@
 package com.Urna.Service;
 
 import com.Urna.Entity.Candidato;
+import com.Urna.Entity.Eleitor;
 import com.Urna.Entity.StatusCandidato;
+import com.Urna.Entity.StatusEleitor;
 import com.Urna.Repository.CandidatoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,45 +80,52 @@ class CandidatoServiceTest {
     @Test
     void testInativarCandidato() {
         when(candidatoRepository.existsById(anyLong())).thenReturn(true);
-
+        when(candidatoRepository.findById(anyLong())).thenReturn(Optional.of(candidato));
+        when(candidatoRepository.save(any(Candidato.class))).thenReturn(candidato);
+        
         String result = candidatoService.inativar(1L);
 
         assertEquals("Candidato inativado com sucesso", result);
-        verify(candidatoRepository, times(1)).inativar(1L);
+        assertEquals(StatusCandidato.INATIVO, candidato.getStatus());
+        verify(candidatoRepository, times(1)).save(candidato);
     }
 
     @Test
     void testInativarCandidatoNotFound() {
-        when(candidatoRepository.existsById(anyLong())).thenReturn(false);
+    	when(candidatoRepository.existsById(anyLong())).thenReturn(false);
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            candidatoService.inativar(1L);
+        	candidatoService.inativar(1L);
         });
 
         assertEquals("Candidato não encontrado com ID: 1", exception.getMessage());
-        verify(candidatoRepository, never()).inativar(anyLong());
+        verify(candidatoRepository, never()).save(candidato);
     }
-
+    
     @Test
     void testReativarCandidato() {
-        when(candidatoRepository.existsById(anyLong())).thenReturn(true);
+    	when(candidatoRepository.existsById(anyLong())).thenReturn(true);
+        when(candidatoRepository.findById(anyLong())).thenReturn(Optional.of(candidato));
+        when(candidatoRepository.save(any(Candidato.class))).thenReturn(candidato);
 
+        candidato.setStatus(StatusCandidato.INATIVO);
         String result = candidatoService.reativar(1L);
 
         assertEquals("Candidato reativado com sucesso", result);
-        verify(candidatoRepository, times(1)).reativar(1L);
+        assertEquals(StatusCandidato.ATIVO, candidato.getStatus());
+        verify(candidatoRepository, times(1)).save(candidato);
     }
-
+    
     @Test
     void testReativarCandidatoNotFound() {
-        when(candidatoRepository.existsById(anyLong())).thenReturn(false);
+    	when(candidatoRepository.existsById(anyLong())).thenReturn(false);
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            candidatoService.reativar(1L);
+        	candidatoService.reativar(1L);
         });
 
         assertEquals("Candidato não encontrado com ID: 1", exception.getMessage());
-        verify(candidatoRepository, never()).reativar(anyLong());
+        verify(candidatoRepository, never()).save(candidato);
     }
 
     @Test

@@ -16,8 +16,7 @@ public class EleitorService {
     private EleitorRepository eleitorRepository;
 
     public Eleitor save(Eleitor eleitor) {
-    	if(eleitor.getCpf() == null || eleitor.getCpf().isBlank() || eleitor.getEmail() == null || eleitor.getEmail().isBlank()) 
-    		eleitor.setStatus(StatusEleitor.PENDENTE);
+    	if(eleitor.getCpf() == null ||eleitor.getCpf().isBlank() || eleitor.getEmail() == null || eleitor.getEmail().isBlank()) eleitor.setStatus(StatusEleitor.PENDENTE);
     	else
     		eleitor.setStatus(StatusEleitor.APTO);
     	
@@ -28,26 +27,32 @@ public class EleitorService {
         if (eleitorRepository.existsById(id)) {
             eleitorAtualizado.setId(id);
             
-            Eleitor eleitor = eleitorRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Eleitor não encontrado com ID: " + id));
+            Eleitor eleitor = eleitorRepository.findById(id).get();
             
-            if(eleitor.getStatus() != StatusEleitor.INATIVO) {
-	            if(eleitorAtualizado.getCpf() == null || eleitorAtualizado.getCpf().isBlank() || eleitorAtualizado.getEmail() == null || eleitorAtualizado.getEmail().isBlank()) 
-	            	eleitorAtualizado.setStatus(StatusEleitor.PENDENTE);
-	        	else
-	        		eleitorAtualizado.setStatus(StatusEleitor.APTO);
-            }else {
-            	eleitorAtualizado.setStatus(StatusEleitor.INATIVO);
+            if(eleitor.getStatus() == StatusEleitor.INATIVO) {
+                eleitorAtualizado.setStatus(StatusEleitor.INATIVO);
+            } else {
+                if(eleitorAtualizado.getCpf() == null || eleitorAtualizado.getCpf().isBlank() || eleitorAtualizado.getEmail() == null || eleitorAtualizado.getEmail().isBlank()) {
+                	eleitorAtualizado.setStatus(StatusEleitor.PENDENTE);
+                } else {
+                    eleitorAtualizado.setStatus(StatusEleitor.APTO);
+                }
             }
+            
             return eleitorRepository.save(eleitorAtualizado);
         } else {
             throw new RuntimeException("Eleitor não encontrado com ID: " + id);
         }
     }
 
+
     public String inativar(Long id) {
         if (eleitorRepository.existsById(id)) {
-            eleitorRepository.inativar(id);
+            
+        	Eleitor eleitor = eleitorRepository.findById(id).get();
+        	eleitor.setStatus(StatusEleitor.INATIVO);
+        	eleitorRepository.save(eleitor);
+        	
             return "Eleitor inativado com sucesso";
         } else {
             throw new RuntimeException("Eleitor não encontrado com ID: " + id);
@@ -57,14 +62,14 @@ public class EleitorService {
     public String reativar(Long id) {
     	if(eleitorRepository.existsById(id)){
     		
-    		Eleitor eleitor = eleitorRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Eleitor não encontrado com ID: " + id));
+    		Eleitor eleitor = eleitorRepository.findById(id).get();
     		
     		if(eleitor.getCpf() == null || eleitor.getCpf().isBlank() || eleitor.getEmail() == null || eleitor.getEmail().isBlank()) 
     			eleitor.setStatus(StatusEleitor.PENDENTE);
-        	else
-        		eleitorRepository.reativar(id);
+    		else
+    			eleitor.setStatus(StatusEleitor.APTO);
     		
+        	eleitorRepository.save(eleitor);
     		return "Eleitor reativado com sucesso";
     	}else
     		throw new RuntimeException("Eleitor não encontrado com ID: " + id);

@@ -26,6 +26,8 @@ class EleitorServiceTest {
     EleitorService eleitorService;
 
     Eleitor eleitor;
+    
+    Eleitor eleitorAtualizado;
 
     @BeforeEach
     void setUp() {
@@ -38,6 +40,14 @@ class EleitorServiceTest {
         eleitor.setProfissao("Estudante");
         eleitor.setTelefoneCelular("(45)998517717");
         eleitor.setStatus(StatusEleitor.APTO);
+        
+        MockitoAnnotations.openMocks(this);
+        eleitorAtualizado = new Eleitor();
+        eleitorAtualizado.setNome("Maria Oliveira");
+        eleitorAtualizado.setCpf("121.753.469-51");
+        eleitorAtualizado.setEmail("pedro.henriqueifpr@gmail.com");
+        eleitorAtualizado.setProfissao("Estudante");
+        eleitorAtualizado.setTelefoneCelular("(45)998517717");
         
     }
 
@@ -78,6 +88,7 @@ class EleitorServiceTest {
         verify(eleitorRepository, times(1)).save(eleitor);
     }
     
+    @Test
     void testSaveEleitorPendenteCpfBlank() {
         when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
 
@@ -90,6 +101,7 @@ class EleitorServiceTest {
         verify(eleitorRepository, times(1)).save(eleitor);
     }
     
+    @Test
     void testSaveEleitorPendenteEmailBlank() {
         when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
 
@@ -106,15 +118,7 @@ class EleitorServiceTest {
     void testUpdateEleitor() {
         when(eleitorRepository.existsById(anyLong())).thenReturn(true);
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
-        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
-
-        Eleitor eleitorAtualizado = new Eleitor();
-        eleitorAtualizado.setNome("Maria Oliveira");
-        eleitorAtualizado.setCpf("121.753.469-51");
-        eleitorAtualizado.setEmail("pedro.henriqueifpr@gmail.com");
-        eleitorAtualizado.setProfissao("Estudante");
-        eleitorAtualizado.setTelefoneCelular("(45)998517717");
-        eleitorAtualizado.setStatus(StatusEleitor.APTO);
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitorAtualizado);
 
         Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
 
@@ -128,16 +132,9 @@ class EleitorServiceTest {
     void testUpdateEleitorInativo() {
         when(eleitorRepository.existsById(anyLong())).thenReturn(true);
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
-        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitorAtualizado);
 
         eleitor.setStatus(StatusEleitor.INATIVO);
-        
-        Eleitor eleitorAtualizado = new Eleitor();
-        eleitorAtualizado.setNome("Maria Oliveira");
-        eleitorAtualizado.setCpf("121.753.469-51");
-        eleitorAtualizado.setEmail("pedro.henriqueifpr@gmail.com");
-        eleitorAtualizado.setProfissao("Estudante");
-        eleitorAtualizado.setTelefoneCelular("(45)998517717");
 
         Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
 
@@ -148,18 +145,12 @@ class EleitorServiceTest {
     }
     
     @Test
-    void testUpdateEleitorNull() {
+    void testUpdateEleitorCpfNull() {
         when(eleitorRepository.existsById(anyLong())).thenReturn(true);
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
-        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitorAtualizado);
 
-        Eleitor eleitorAtualizado = new Eleitor();
-        eleitorAtualizado.setNome("Maria Oliveira");
         eleitorAtualizado.setCpf(null);
-        eleitorAtualizado.setEmail(null);
-        eleitorAtualizado.setProfissao("Estudante");
-        eleitorAtualizado.setTelefoneCelular("(45)998517717");
-
         Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
 
         assertNotNull(updatedEleitor);
@@ -167,7 +158,51 @@ class EleitorServiceTest {
         assertEquals(StatusEleitor.PENDENTE, updatedEleitor.getStatus());
         verify(eleitorRepository, times(1)).save(eleitorAtualizado);
     }
+    
+    @Test
+    void testUpdateEleitorEmailNull() {
+    	when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitorAtualizado);
 
+        eleitorAtualizado.setEmail(null);
+        Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
+
+        assertNotNull(updatedEleitor);
+        assertEquals(1L, updatedEleitor.getId());
+        assertEquals(StatusEleitor.PENDENTE, updatedEleitor.getStatus());
+        verify(eleitorRepository, times(1)).save(eleitorAtualizado);
+    }
+    
+    @Test
+    void testUpdateEleitorCpfBlank() {
+        when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitorAtualizado);
+
+        eleitorAtualizado.setCpf("");
+        Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
+
+        assertNotNull(updatedEleitor);
+        assertEquals(1L, updatedEleitor.getId());
+        assertEquals(StatusEleitor.PENDENTE, updatedEleitor.getStatus());
+        verify(eleitorRepository, times(1)).save(eleitorAtualizado);
+    }
+    
+    @Test
+    void testUpdateEleitorEmailBlank() {
+    	when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitorAtualizado);
+
+        eleitorAtualizado.setEmail("");
+        Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
+
+        assertNotNull(updatedEleitor);
+        assertEquals(1L, updatedEleitor.getId());
+        assertEquals(StatusEleitor.PENDENTE, updatedEleitor.getStatus());
+        verify(eleitorRepository, times(1)).save(eleitorAtualizado);
+    }
 
     @Test
     void testUpdateEleitorNotFound() {
@@ -184,47 +219,108 @@ class EleitorServiceTest {
     @Test
     void testInativarEleitor() {
         when(eleitorRepository.existsById(anyLong())).thenReturn(true);
-
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+        
         String result = eleitorService.inativar(1L);
 
         assertEquals("Eleitor inativado com sucesso", result);
-        verify(eleitorRepository, times(1)).inativar(1L);
+        assertEquals(StatusEleitor.INATIVO, eleitor.getStatus());
+        verify(eleitorRepository, times(1)).save(eleitor);
     }
 
     @Test
     void testInativarEleitorNotFound() {
-        when(eleitorRepository.existsById(anyLong())).thenReturn(false);
+    	when(eleitorRepository.existsById(anyLong())).thenReturn(false);
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             eleitorService.inativar(1L);
         });
 
         assertEquals("Eleitor não encontrado com ID: 1", exception.getMessage());
-        verify(eleitorRepository, never()).inativar(anyLong());
+        verify(eleitorRepository, never()).save(eleitor);
     }
 
     @Test
     void testReativarEleitor() {
-        when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+    	when(eleitorRepository.existsById(anyLong())).thenReturn(true);
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
 
+        eleitor.setStatus(StatusEleitor.INATIVO);
         String result = eleitorService.reativar(1L);
 
         assertEquals("Eleitor reativado com sucesso", result);
-        verify(eleitorRepository, times(1)).reativar(1L);
+        assertEquals(StatusEleitor.APTO, eleitor.getStatus());
+        verify(eleitorRepository, times(1)).save(eleitor);
     }
-
-
+    
     @Test
     void testReativarEleitorNotFound() {
-        when(eleitorRepository.existsById(anyLong())).thenReturn(false);
+    	when(eleitorRepository.existsById(anyLong())).thenReturn(false);
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
         	eleitorService.reativar(1L);
         });
 
         assertEquals("Eleitor não encontrado com ID: 1", exception.getMessage());
-        verify(eleitorRepository, never()).reativar(anyLong());
+        verify(eleitorRepository, never()).save(eleitor);
+    }
+    
+    @Test
+    void testReativarEleitorCpfNull() {
+        when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+
+        eleitor.setCpf(null);
+        String result = eleitorService.reativar(1L);
+
+        assertEquals("Eleitor reativado com sucesso", result);
+        assertEquals(eleitor.getStatus(), StatusEleitor.PENDENTE);
+        verify(eleitorRepository, times(1)).save(eleitor);
+    }
+    
+    @Test
+    void testReativarEleitorEmailNull() {
+        when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+
+        eleitor.setEmail(null);
+        String result = eleitorService.reativar(1L);
+
+        assertEquals("Eleitor reativado com sucesso", result);
+        assertEquals(eleitor.getStatus(), StatusEleitor.PENDENTE);
+        verify(eleitorRepository, times(1)).save(eleitor);
+    }
+    
+    @Test
+    void testReativarEleitorCpfBlank() {
+        when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+
+        eleitor.setCpf("");
+        String result = eleitorService.reativar(1L);
+
+        assertEquals("Eleitor reativado com sucesso", result);
+        assertEquals(eleitor.getStatus(), StatusEleitor.PENDENTE);
+        verify(eleitorRepository, times(1)).save(eleitor);
+    }
+    
+    @Test
+    void testReativarEleitorEmailBlank() {
+        when(eleitorRepository.existsById(anyLong())).thenReturn(true);
+        when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
+        when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+
+        eleitor.setEmail("");
+        String result = eleitorService.reativar(1L);
+
+        assertEquals("Eleitor reativado com sucesso", result);
+        assertEquals(eleitor.getStatus(), StatusEleitor.PENDENTE);
+        verify(eleitorRepository, times(1)).save(eleitor);
     }
 
     @Test
