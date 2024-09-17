@@ -1,4 +1,16 @@
 -------------------------------------------------------------------------------
 Test set: com.Urna.Service.EleitorServiceTest
 -------------------------------------------------------------------------------
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.387 s -- in com.Urna.Service.EleitorServiceTest
+Tests run: 15, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.385 s <<< FAILURE! -- in com.Urna.Service.EleitorServiceTest
+com.Urna.Service.EleitorServiceTest.testUpdateEleitorNull -- Time elapsed: 0.028 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <PENDENTE> but was: <APTO>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1124)
+	at com.Urna.Service.EleitorServiceTest.testUpdateEleitorNull(EleitorServiceTest.java:167)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

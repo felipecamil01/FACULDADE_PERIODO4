@@ -124,18 +124,20 @@ class EleitorServiceTest {
         verify(eleitorRepository, times(1)).save(eleitorAtualizado);
     }
     
+    @Test
     void testUpdateEleitorInativo() {
         when(eleitorRepository.existsById(anyLong())).thenReturn(true);
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
         when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
 
+        eleitor.setStatus(StatusEleitor.INATIVO);
+        
         Eleitor eleitorAtualizado = new Eleitor();
         eleitorAtualizado.setNome("Maria Oliveira");
         eleitorAtualizado.setCpf("121.753.469-51");
         eleitorAtualizado.setEmail("pedro.henriqueifpr@gmail.com");
         eleitorAtualizado.setProfissao("Estudante");
         eleitorAtualizado.setTelefoneCelular("(45)998517717");
-        eleitorAtualizado.setStatus(StatusEleitor.INATIVO);
 
         Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
 
@@ -145,6 +147,7 @@ class EleitorServiceTest {
         verify(eleitorRepository, times(1)).save(eleitorAtualizado);
     }
     
+    @Test
     void testUpdateEleitorNull() {
         when(eleitorRepository.existsById(anyLong())).thenReturn(true);
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
@@ -156,7 +159,6 @@ class EleitorServiceTest {
         eleitorAtualizado.setEmail(null);
         eleitorAtualizado.setProfissao("Estudante");
         eleitorAtualizado.setTelefoneCelular("(45)998517717");
-        eleitorAtualizado.setStatus(StatusEleitor.PENDENTE);
 
         Eleitor updatedEleitor = eleitorService.update(1L, eleitorAtualizado);
 

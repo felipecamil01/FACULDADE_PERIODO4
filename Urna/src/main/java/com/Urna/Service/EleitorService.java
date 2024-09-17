@@ -36,8 +36,9 @@ public class EleitorService {
 	            	eleitorAtualizado.setStatus(StatusEleitor.PENDENTE);
 	        	else
 	        		eleitorAtualizado.setStatus(StatusEleitor.APTO);
-            }else
+            }else {
             	eleitorAtualizado.setStatus(StatusEleitor.INATIVO);
+            }
             return eleitorRepository.save(eleitorAtualizado);
         } else {
             throw new RuntimeException("Eleitor não encontrado com ID: " + id);
