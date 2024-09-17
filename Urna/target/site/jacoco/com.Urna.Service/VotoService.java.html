@@ -76,8 +76,8 @@ import java.util.UUID;
 <span class="fc" id="L76">            candidato.setVotosApurados(candidatoRepository.contarVotosPorCandidato(candidato.getId()));</span>
 <span class="fc" id="L77">        }</span>
 
-<span class="pc" id="L79">        candidatosPrefeito.sort((c1, c2) -&gt; Integer.compare(c2.getVotosApurados(), c1.getVotosApurados()));</span>
-<span class="pc" id="L80">        candidatosVereador.sort((c1, c2) -&gt; Integer.compare(c2.getVotosApurados(), c1.getVotosApurados()));</span>
+<span class="fc" id="L79">        candidatosPrefeito.sort((c1, c2) -&gt; Integer.compare(c2.getVotosApurados(), c1.getVotosApurados()));</span>
+<span class="fc" id="L80">        candidatosVereador.sort((c1, c2) -&gt; Integer.compare(c2.getVotosApurados(), c1.getVotosApurados()));</span>
 
 <span class="fc" id="L82">        apuracao.setCandidatosPrefeito(candidatosPrefeito);</span>
 <span class="fc" id="L83">        apuracao.setCandidatosVereador(candidatosVereador);</span>

@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +40,6 @@ public class VotoServiceTest {
 
     @Test
     public void testVotarSuccess() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.APTO);
 
@@ -59,12 +59,10 @@ public class VotoServiceTest {
         when(candidatoRepository.findById(anyLong())).thenReturn(Optional.of(candidatoPrefeito), Optional.of(candidatoVereador));
         when(votoRepository.save(any(Voto.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
         String hashComprovante = votoService.votar(1L, voto);
 
-        // Assert
         assertNotNull(hashComprovante);
-        assertEquals(36, hashComprovante.length()); // UUID length
+        assertEquals(36, hashComprovante.length());
         assertEquals(StatusEleitor.VOTOU, eleitor.getStatus());
         verify(votoRepository).save(voto);
         verify(eleitorRepository).save(eleitor);
@@ -72,14 +70,11 @@ public class VotoServiceTest {
     
     @Test
     void testVotar_EleitorNaoEncontrado() {
-        // Dados de entrada
         Long eleitorId = 1L;
-        Voto voto = new Voto(); // Configure o voto conforme necessário
-
-        // Configuração do mock
+        Voto voto = new Voto(); 
+        
         when(eleitorRepository.findById(eleitorId)).thenReturn(Optional.empty());
 
-        // Execução e verificação
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(eleitorId, voto);
         });
@@ -90,7 +85,6 @@ public class VotoServiceTest {
     
     @Test
     void testVotoCandidatoPrefeitoNaoEncontrado() {
-        // Arrange
         Long eleitorId = 1L;
         Voto voto = new Voto();
         voto.setCandidatoPrefeito(new Candidato());
@@ -102,7 +96,6 @@ public class VotoServiceTest {
         when(candidatoRepository.findById(999L)).thenReturn(Optional.empty());
         when(candidatoRepository.findById(2L)).thenReturn(Optional.of(new Candidato()));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(eleitorId, voto);
         });
@@ -113,7 +106,6 @@ public class VotoServiceTest {
 
     @Test
     void testVotoCandidatoVereadorNaoEncontrado() {
-        // Arrange
         Long eleitorId = 1L;
         Voto voto = new Voto();
         voto.setCandidatoPrefeito(new Candidato());
@@ -125,7 +117,6 @@ public class VotoServiceTest {
         when(candidatoRepository.findById(1L)).thenReturn(Optional.of(new Candidato()));
         when(candidatoRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(eleitorId, voto);
         });
@@ -136,7 +127,6 @@ public class VotoServiceTest {
     
     @Test
     public void testVotarEleitorBloqueado() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.BLOQUEADO);
 
@@ -144,7 +134,6 @@ public class VotoServiceTest {
 
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(1L, voto);
         });
@@ -155,7 +144,6 @@ public class VotoServiceTest {
 
     @Test
     public void testVotarEleitorPendente() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.PENDENTE);
 
@@ -163,7 +151,6 @@ public class VotoServiceTest {
 
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(1L, voto);
         });
@@ -176,7 +163,6 @@ public class VotoServiceTest {
 
     @Test
     public void testVotarEleitorJaVotou() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.VOTOU);
 
@@ -184,7 +170,6 @@ public class VotoServiceTest {
 
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(1L, voto);
         });
@@ -195,7 +180,6 @@ public class VotoServiceTest {
 
     @Test
     public void testVotarEleitorInapto() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.INATIVO);
 
@@ -203,7 +187,6 @@ public class VotoServiceTest {
 
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(1L, voto);
         });
@@ -214,13 +197,12 @@ public class VotoServiceTest {
 
     @Test
     public void testVotarCandidatoPrefeitoIncorreto() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.APTO);
 
         Candidato candidatoPrefeito = new Candidato();
         candidatoPrefeito.setId(1L);
-        candidatoPrefeito.setFuncao(2); // Funcao incorreta para prefeito
+        candidatoPrefeito.setFuncao(2);
 
         Candidato candidatoVereador = new Candidato();
         candidatoVereador.setId(2L);
@@ -233,7 +215,6 @@ public class VotoServiceTest {
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
         when(candidatoRepository.findById(anyLong())).thenReturn(Optional.of(candidatoPrefeito), Optional.of(candidatoVereador));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(1L, voto);
         });
@@ -244,7 +225,6 @@ public class VotoServiceTest {
 
     @Test
     public void testVotarCandidatoVereadorIncorreto() {
-        // Arrange
         Eleitor eleitor = new Eleitor();
         eleitor.setStatus(StatusEleitor.APTO);
 
@@ -263,7 +243,6 @@ public class VotoServiceTest {
         when(eleitorRepository.findById(anyLong())).thenReturn(Optional.of(eleitor));
         when(candidatoRepository.findById(anyLong())).thenReturn(Optional.of(candidatoPrefeito), Optional.of(candidatoVereador));
 
-        // Act & Assert
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             votoService.votar(1L, voto);
         });
@@ -274,7 +253,6 @@ public class VotoServiceTest {
 
     @Test
     public void testRealizarApuracao() {
-        // Arrange
         Candidato candidatoPrefeito = new Candidato();
         candidatoPrefeito.setId(1L);
         candidatoPrefeito.setVotosApurados(10);
@@ -288,10 +266,8 @@ public class VotoServiceTest {
         when(candidatoRepository.contarVotosPorCandidato(anyLong())).thenReturn(10);
         when(votoRepository.count()).thenReturn(30L);
 
-        // Act
         Apuracao apuracao = votoService.realizarApuracao();
 
-        // Assert
         assertEquals(1, apuracao.getCandidatosPrefeito().size());
         assertEquals(1, apuracao.getCandidatosVereador().size());
         assertEquals(30, apuracao.getTotalVotos());
@@ -299,4 +275,44 @@ public class VotoServiceTest {
         verify(candidatoRepository).contarVotosPorCandidato(2L);
     }
     
+    @Test
+    public void testRealizarApuracaoOrdemCerta() {
+        Candidato candidato1 = new Candidato();
+        candidato1.setId(1L);
+        candidato1.setVotosApurados(10);
+
+        Candidato candidato2 = new Candidato();
+        candidato2.setId(2L);
+        candidato2.setVotosApurados(20);
+
+        Candidato candidato3 = new Candidato();
+        candidato3.setId(3L);
+        candidato3.setVotosApurados(15);
+
+        when(candidatoRepository.findCandidatosPrefeitoAtivos()).thenReturn(Arrays.asList(candidato1, candidato2, candidato3));
+        when(candidatoRepository.findCandidatosVereadorAtivos()).thenReturn(Arrays.asList(candidato3, candidato1, candidato2));
+        when(candidatoRepository.contarVotosPorCandidato(anyLong())).thenAnswer(invocation -> {
+            Long id = invocation.getArgument(0);
+            if (id == 1L) return 10;
+            if (id == 2L) return 20;
+            if (id == 3L) return 15;
+            return 0;
+        });
+        when(votoRepository.count()).thenReturn(45L);
+
+        Apuracao apuracao = votoService.realizarApuracao();
+
+        List<Candidato> candidatosPrefeito = apuracao.getCandidatosPrefeito();
+        List<Candidato> candidatosVereador = apuracao.getCandidatosVereador();
+
+        assertEquals(3, candidatosPrefeito.size());
+        assertEquals(3, candidatosVereador.size());
+        assertEquals(20, candidatosPrefeito.get(0).getVotosApurados());
+        assertEquals(15, candidatosPrefeito.get(1).getVotosApurados());
+        assertEquals(10, candidatosPrefeito.get(2).getVotosApurados());
+        assertEquals(20, candidatosVereador.get(0).getVotosApurados());
+        assertEquals(15, candidatosVereador.get(1).getVotosApurados());
+        assertEquals(10, candidatosVereador.get(2).getVotosApurados());
+    }
+
 }
